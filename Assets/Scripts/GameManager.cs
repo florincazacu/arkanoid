@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour {
     public Text scoreText;
     public Text livesText;
     public Text gameOverText;
+    public Text gameWonText;
     private int score = 0;
     private int lives = 5;
     private bool gameStarted = false;
@@ -36,6 +37,7 @@ public class GameManager : MonoBehaviour {
 
     void InitGame() {
         gameOverText.enabled = false;
+        gameWonText.enabled = false;
         scoreText.text = "SCORE: " + score.ToString();
         livesText.text = "LIVES: " + lives.ToString();
         addBrick(redBrick, 90);
@@ -90,6 +92,13 @@ public class GameManager : MonoBehaviour {
 
     public void gameOver() {
         gameOverText.enabled = true;
+    }
+
+    public void gameWon() {
+        if (GameObject.Find("redBrick") == null && GameObject.Find("yellowBrick") == null && GameObject.Find("blueBrick") == null && GameObject.Find("purpleBrick") == null && GameObject.Find("greenBrick") == null) {
+            gameWonText.enabled = true;
+            ball.SendMessage("resetBall");
+        }
     }
 
     // Update is called once per frame
