@@ -20,4 +20,8 @@ public class Racket : MonoBehaviour {
         GetComponent<Rigidbody2D>().transform.position = temp;
         //GetComponent<Rigidbody2D>().position.Set(0, -100);
     }
+
+    public void freezeRacket() {
+        GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+    }
 }

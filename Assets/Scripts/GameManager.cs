@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Diagnostics;
+using System;
 
 public class GameManager : MonoBehaviour {
 
@@ -22,12 +23,11 @@ public class GameManager : MonoBehaviour {
     public Transform blueBrick;
     public Transform purpleBrick;
     public Transform greenBrick;
-    
+
     void Awake() {
         if (instance == null) {
             instance = this;
-        }
-        else if (instance != this) {
+        } else if (instance != this) {
             Destroy(gameObject);
         }
         DontDestroyOnLoad(gameObject);
@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour {
         gameWonText.enabled = false;
         scoreText.text = "SCORE: " + score.ToString();
         livesText.text = "LIVES: " + lives.ToString();
+        gameWonText.text = "CONGRATULATIONS!";
         addBrick(redBrick, 90);
         addBrick(yellowBrick, 82);
         addBrick(blueBrick, 74);
@@ -76,33 +77,43 @@ public class GameManager : MonoBehaviour {
     }
 
     public void UpdateScore() {
-        scoreText.text = "SCORE:" + score.ToString();
+        scoreText.text = "SCORE: " + score.ToString();
     }
 
     public void UpdateLives() {
-        livesText.text = "LIVES:" + lives.ToString();
+        livesText.text = "LIVES: " + lives.ToString();
     }
 
     void ballOut() {
         lives -= 1;
-        UpdateLives();
-        ball.SendMessage("resetBall");
-        racket.SendMessage("resetRacket");
+        if (lives >= 0) {
+            UpdateLives();
+            ball.SendMessage("resetBall");
+            racket.SendMessage("resetRacket");
+        } else {
+            gameOverText.enabled = true;
+            ball.SendMessage("freezeBall");
+            racket.SendMessage("freezeRacket");
+        }
     }
 
     public void gameOver() {
         gameOverText.enabled = true;
     }
 
-    public void gameWon() {
-        if (GameObject.Find("redBrick") == null && GameObject.Find("yellowBrick") == null && GameObject.Find("blueBrick") == null && GameObject.Find("purpleBrick") == null && GameObject.Find("greenBrick") == null) {
+    public void checkGameWon() {
+        GameObject brick = GameObject.Find("greenBrick");
+        if (GameObject.Find("redBrick") == null && GameObject.Find("yellowBrick") == null && GameObject.Find("blueBrick") == null && 
+            GameObject.Find("purpleBrick") == null && GameObject.Find("greenBrick") == null) {
             gameWonText.enabled = true;
-            ball.SendMessage("resetBall");
+            ball.SendMessage("freezeBall");
+            racket.SendMessage("freezeRacket");
         }
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
+        checkGameWon();
         if (!gameStarted && Input.GetKeyDown(KeyCode.Space)) {
             gameStarted = true;
             ball.SendMessage("launchBall");
